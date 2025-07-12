@@ -1,0 +1,7 @@
+{
+  "slot": "tacz_unidict:ammo/slot/shot",
+  "shell": {
+    "model": "tacz_unidict:shell/shot_shell",
+    "texture": "tacz_unidict:shell/shot_shell"
+  }
+}

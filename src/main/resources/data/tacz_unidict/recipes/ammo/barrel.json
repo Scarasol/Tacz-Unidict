@@ -1,0 +1,29 @@
+{
+  "materials": [
+
+    {
+      "item": {
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 15
+    },
+    {
+      "item": {
+        "item": "minecraft:gunpowder"
+      },
+      "count": 12
+    },
+    {
+      "item": {
+        "item": "minecraft:iron_ingot"
+      },
+      "count": 3
+    }
+  ],
+  "result": {
+    "type": "ammo",
+    "id": "tacz_unidict:barrel",
+    "count": 6
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}

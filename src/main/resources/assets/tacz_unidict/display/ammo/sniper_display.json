@@ -1,0 +1,7 @@
+{
+  "slot": "tacz_unidict:ammo/slot/sniper",
+  "shell": {
+    "model": "tacz_unidict:shell/sniper_shell",
+    "texture": "tacz_unidict:shell/sniper_shell"
+  }
+}

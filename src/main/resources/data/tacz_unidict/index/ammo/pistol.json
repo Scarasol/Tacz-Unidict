@@ -1,0 +1,6 @@
+{
+  "name": "tacz_unidict.ammo.pistol.name",
+  "display": "tacz_unidict:pistol_display",
+  "tooltip": "tacz_unidict.gun.ammo.desc",
+  "stack_size": 64
+}

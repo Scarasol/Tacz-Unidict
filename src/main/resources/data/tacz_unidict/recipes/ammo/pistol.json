@@ -1,0 +1,23 @@
+{
+  "materials": [
+
+    {
+      "item": {
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 10
+    },
+    {
+      "item": {
+        "item": "minecraft:gunpowder"
+      },
+      "count": 2
+    }
+  ],
+  "result": {
+    "type": "ammo",
+    "id": "tacz_unidict:pistol",
+    "count": 40
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}

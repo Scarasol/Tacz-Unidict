@@ -1,0 +1,6 @@
+{
+  "name": "tacz_unidict.ammo.sniper.name",
+  "display": "tacz_unidict:sniper_display",
+  "tooltip": "tacz_unidict.gun.ammo.desc",
+  "stack_size": 64
+}

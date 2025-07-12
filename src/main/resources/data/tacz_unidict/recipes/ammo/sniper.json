@@ -1,0 +1,29 @@
+{
+  "materials": [
+
+    {
+      "item": {
+        "item": "minecraft:copper_ingot"
+      },
+      "count": 30
+    },
+    {
+      "item": {
+        "item": "minecraft:gunpowder"
+      },
+      "count": 10
+    },
+    {
+      "item": {
+        "item": "minecraft:lapis_lazuli"
+      },
+      "count": 6
+    }
+  ],
+  "result": {
+    "type": "ammo",
+    "id": "tacz_unidict:sniper",
+    "count": 18
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}
