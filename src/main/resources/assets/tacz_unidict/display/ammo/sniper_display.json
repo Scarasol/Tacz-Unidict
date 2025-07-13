@@ -1,7 +1,28 @@
 {
+  "model": "tacz_unidict:ammo/sniper_ammo",
+  "texture": "tacz_unidict:ammo/uv/sniper_ammo",
   "slot": "tacz_unidict:ammo/slot/sniper",
   "shell": {
     "model": "tacz_unidict:shell/sniper_shell",
     "texture": "tacz_unidict:shell/sniper_shell"
+  },
+  "transform": {
+    "scale": {
+      "thirdperson": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "ground": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "fixed": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
   }
 }
