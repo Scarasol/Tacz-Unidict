@@ -1,10 +1,11 @@
 {
-    "pack.tacz_unidict.the_tacz_unidict_park.name": "Firearm Convention",
     "pack.tacz_unidict.the_tacz_unidict_park.desc": "§cGeneral Ammo Pack",
-    "tacz_unidict.ammo.pistol.name": "General Pistol",
-    "tacz_unidict.ammo.shot.name": "General Shot",
-    "tacz_unidict.ammo.rifle.name": "General Rifle",
-    "tacz_unidict.ammo.sniper.name": "General Sniper",
+    "pack.tacz_unidict.the_tacz_unidict_park.name": "Firearm Convention",
     "tacz_unidict.ammo.barrel.name": "General Barrel",
+    "tacz_unidict.ammo.fuel_tank.name": "General Fuel Tank",
+    "tacz_unidict.ammo.pistol.name": "General Pistol",
+    "tacz_unidict.ammo.rifle.name": "General Rifle",
+    "tacz_unidict.ammo.shot.name": "General Shot",
+    "tacz_unidict.ammo.sniper.name": "General Sniper",
     "tacz_unidict.gun.ammo.desc": "Tacz: Unidict"
 }

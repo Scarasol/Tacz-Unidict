@@ -1,10 +1,11 @@
 {
-    "pack.tacz_unidict.the_tacz_unidict_park.name": "铳械协议",
     "pack.tacz_unidict.the_tacz_unidict_park.desc": "§c通用子弹包",
-    "tacz_unidict.ammo.pistol.name": "通用手枪子弹",
-    "tacz_unidict.ammo.shot.name": "通用霰弹",
-    "tacz_unidict.ammo.rifle.name": "通用步枪子弹",
-    "tacz_unidict.ammo.sniper.name": "通用狙击枪子弹",
+    "pack.tacz_unidict.the_tacz_unidict_park.name": "铳械协议",
     "tacz_unidict.ammo.barrel.name": "通用炮弹",
+    "tacz_unidict.ammo.fuel_tank.name": "通用能量罐",
+    "tacz_unidict.ammo.pistol.name": "通用手枪子弹",
+    "tacz_unidict.ammo.rifle.name": "通用步枪子弹",
+    "tacz_unidict.ammo.shot.name": "通用霰弹",
+    "tacz_unidict.ammo.sniper.name": "通用狙击枪子弹",
     "tacz_unidict.gun.ammo.desc": "通用子弹"
 }

@@ -19,10 +19,11 @@ public class CommonConfig {
     static {
         TYPE_TO_AMMO = BUILDER.comment("""
                 Which ammo is used by each type of gun.
+                Reload type supported.
                 Format: "pistol, tacz:9mm" — this means that all guns of the type pistol will use the 9mm.
                 """)
-                .defineList("Ammo of gun",
-                        Lists.newArrayList("pistol, tacz_unidict:pistol", "sniper, tacz_unidict:sniper", "rifle, tacz_unidict:rifle", "shotgun, tacz_unidict:shot", "smg, tacz_unidict:pistol", "rpg, tacz_unidict:barrel", "mg, tacz_unidict:rifle"),
+                .defineList("Ammo of Gun",
+                        Lists.newArrayList("pistol, tacz_unidict:pistol", "sniper, tacz_unidict:sniper", "rifle, tacz_unidict:rifle", "shotgun, tacz_unidict:shot", "smg, tacz_unidict:pistol", "rpg, tacz_unidict:barrel", "mg, tacz_unidict:rifle", "fuel, tacz_unidict:fuel_tank"),
                         (element) -> true);
         GUN_WHITELIST = BUILDER.comment("Which guns are not affected by this mod.")
                 .defineList("Gun WhiteList", Lists.newArrayList(), (element) -> true);

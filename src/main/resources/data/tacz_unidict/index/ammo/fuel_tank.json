@@ -1,0 +1,6 @@
+{
+  "name": "tacz_unidict.ammo.fuel_tank.name",
+  "display": "tacz_unidict:fuel_tank_display",
+  "tooltip": "tacz_unidict.gun.ammo.desc",
+  "stack_size": 64
+}
