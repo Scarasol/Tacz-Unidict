@@ -8,6 +8,7 @@ import com.tacz.guns.api.item.nbt.AmmoItemDataAccessor;
 import com.tacz.guns.item.AmmoItem;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,11 +42,11 @@ public abstract class AmmoItemMixin extends Item implements AmmoItemDataAccessor
                         gunIndex.getGunData().getAmmoId().toString()).orElse("");
                 if (AmmoManager.canUseGeneralAmmo(gunId.toString(), ammoIdStr)) {
                     return commonGunIndex.map((gunIndex) -> {
-                        ResourceLocation location = AmmoManager.getAmmo(gunIndex.getGunData().getReloadData().getType().name().toLowerCase());
+                        Tuple<ResourceLocation, Boolean> location = AmmoManager.getAmmo(gunIndex.getGunData().getReloadData().getType().name().toLowerCase());
                         if (location == null) {
                             location = AmmoManager.getAmmo(gunIndex.getType());
                         }
-                        return ammoId.equals(location);
+                        return location != null && ammoId.equals(location.getA());
                     }).orElse(false);
                 }
                 return ammoIdStr.equals(ammoId.toString());

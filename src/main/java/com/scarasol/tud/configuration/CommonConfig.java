@@ -21,6 +21,7 @@ public class CommonConfig {
                 Which ammo is used by each type of gun.
                 Reload type supported.
                 Format: "pistol, tacz:9mm" — this means that all guns of the type pistol will use the 9mm.
+                "pistol, $minecraft:gold_nugget" - use $ to make the guns use item as ammo.
                 """)
                 .defineList("Ammo of Gun",
                         Lists.newArrayList("pistol, tacz_unidict:pistol", "sniper, tacz_unidict:sniper", "rifle, tacz_unidict:rifle", "shotgun, tacz_unidict:shot", "smg, tacz_unidict:pistol", "rpg, tacz_unidict:barrel", "mg, tacz_unidict:rifle", "fuel, tacz_unidict:fuel_tank"),

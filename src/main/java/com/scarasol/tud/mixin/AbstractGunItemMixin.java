@@ -1,23 +1,26 @@
 package com.scarasol.tud.mixin;
 
 
+import com.scarasol.tud.inventory.tooltip.CustomGunTooltip;
 import com.scarasol.tud.manager.AmmoManager;
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.item.IAmmo;
+import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IAnimationItem;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
-import com.tacz.guns.inventory.tooltip.GunTooltip;
 import com.tacz.guns.resource.index.CommonGunIndex;
-import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -36,17 +39,52 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
     @Inject(method = "getTooltipImage", cancellable = true, at = @At(value = "INVOKE", target = "Lcom/tacz/guns/resource/pojo/data/gun/GunData;getAmmoId()Lnet/minecraft/resources/ResourceLocation;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void tud$getAmmoId(ItemStack stack, CallbackInfoReturnable<Optional<TooltipComponent>> cir, IGun iGun, Optional optional, CommonGunIndex gunIndex) {
         if (AmmoManager.canUseGeneralAmmo(getGunId(stack).toString(), gunIndex.getGunData().getAmmoId().toString())) {
-            ResourceLocation ammo = AmmoManager.getAmmo(gunIndex.getGunData().getReloadData().getType().name().toLowerCase());
+            Tuple<ResourceLocation, Boolean> ammo = AmmoManager.getAmmo(gunIndex.getGunData().getReloadData().getType().name().toLowerCase());
             if (ammo == null) {
                 ammo = AmmoManager.getAmmo(gunIndex.getType());
             }
             if (ammo != null) {
-                cir.setReturnValue(Optional.of(new GunTooltip(stack, iGun, ammo, gunIndex)));
-                cir.cancel();
+                cir.setReturnValue(Optional.of(new CustomGunTooltip(stack, iGun, ammo.getA(), gunIndex, ammo.getB())));
             }
         }
     }
 
+    @Inject(method = "lambda$canReload$1", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private static void tud$checkItem(ItemStack gunItem, IItemHandler cap, CallbackInfoReturnable<Boolean> cir, int i, ItemStack checkAmmoStack) {
+        Item item = checkAmmoStack.getItem();
+        if (item instanceof IAmmo || item instanceof IAmmoBox) {
+            return;
+        }
+        if (AmmoManager.isAmmoOfGunItem(gunItem, checkAmmoStack)) {
+            cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "findAndExtractInventoryAmmo", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void tud$findAndExtractInventoryAmmoItem(IItemHandler itemHandler, ItemStack gunItem, int needAmmoCount, CallbackInfoReturnable<Integer> cir, int cnt, int i, ItemStack checkAmmoStack) {
+        Item ammo = checkAmmoStack.getItem();
+        if (ammo instanceof IAmmo || ammo instanceof IAmmoBox) {
+            return;
+        }
+        if (AmmoManager.isAmmoOfGunItem(gunItem, checkAmmoStack)) {
+            ItemStack extractItem = itemHandler.extractItem(i, cnt, false);
+            cnt -= extractItem.getCount();
+            if (cnt <= 0) {
+                cir.setReturnValue(needAmmoCount - cnt);
+            }
+        }
+    }
+
+    @Inject(method = "lambda$hasInventoryAmmo$6", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private static void tud$hasInventoryAmmoItem(ItemStack gun, IItemHandler cap, CallbackInfoReturnable<Boolean> cir, int i, ItemStack checkAmmoStack) {
+        Item item = checkAmmoStack.getItem();
+        if (item instanceof IAmmo || item instanceof IAmmoBox) {
+            return;
+        }
+        if (AmmoManager.isAmmoOfGunItem(gun, checkAmmoStack)) {
+            cir.setReturnValue(true);
+        }
+    }
 
 
 }

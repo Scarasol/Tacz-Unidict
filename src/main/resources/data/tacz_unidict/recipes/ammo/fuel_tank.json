@@ -1,0 +1,29 @@
+{
+  "materials": [
+
+    {
+      "item": {
+        "item": "minecraft:iron_ingot"
+      },
+      "count": 6
+    },
+    {
+      "item": {
+        "item": "minecraft:redstone"
+      },
+      "count": 21
+    },
+    {
+      "item": {
+        "item": "minecraft:blaze_rod"
+      },
+      "count": 1
+    }
+  ],
+  "result": {
+    "type": "ammo",
+    "id": "tacz_unidict:fuel_tank",
+    "count": 3
+  },
+  "type": "tacz:gun_smith_table_crafting"
+}

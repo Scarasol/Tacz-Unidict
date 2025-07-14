@@ -10,7 +10,9 @@
   "mixins": [
     "AbstractGunItemMixin",
     "AmmoBoxItemMixin",
-    "AmmoItemMixin"
+    "AmmoItemMixin",
+    "ClientGunTooltipMixin",
+    "GunHudOverlayMixin"
   ],
   "client": [
   ]
