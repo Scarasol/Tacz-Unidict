@@ -36,6 +36,9 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         super(properties);
     }
 
+    @Unique
+    private int tud$currentAmmo;
+
     @Inject(method = "getTooltipImage", cancellable = true, at = @At(value = "INVOKE", target = "Lcom/tacz/guns/resource/pojo/data/gun/GunData;getAmmoId()Lnet/minecraft/resources/ResourceLocation;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void tud$getAmmoId(ItemStack stack, CallbackInfoReturnable<Optional<TooltipComponent>> cir, IGun iGun, Optional optional, CommonGunIndex gunIndex) {
         if (AmmoManager.canUseGeneralAmmo(getGunId(stack).toString(), gunIndex.getGunData().getAmmoId().toString())) {
@@ -60,6 +63,11 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         }
     }
 
+    @Inject(method = "findAndExtractInventoryAmmo", remap = false, at = @At("HEAD"))
+    private void tud$findAndExtractInventoryAmmoItemHead(IItemHandler itemHandler, ItemStack gunItem, int needAmmoCount, CallbackInfoReturnable<Integer> cir) {
+        tud$currentAmmo = needAmmoCount;
+    }
+
     @Inject(method = "findAndExtractInventoryAmmo", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void tud$findAndExtractInventoryAmmoItem(IItemHandler itemHandler, ItemStack gunItem, int needAmmoCount, CallbackInfoReturnable<Integer> cir, int cnt, int i, ItemStack checkAmmoStack) {
         Item ammo = checkAmmoStack.getItem();
@@ -68,10 +76,17 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         }
         if (AmmoManager.isAmmoOfGunItem(gunItem, checkAmmoStack)) {
             ItemStack extractItem = itemHandler.extractItem(i, cnt, false);
-            cnt -= extractItem.getCount();
-            if (cnt <= 0) {
-                cir.setReturnValue(needAmmoCount - cnt);
+            tud$currentAmmo -= extractItem.getCount();
+            if (tud$currentAmmo <= 0) {
+                cir.setReturnValue(needAmmoCount - tud$currentAmmo);
             }
+        }
+    }
+
+    @Inject(method = "findAndExtractInventoryAmmo", remap = false, cancellable = true, at = @At("TAIL"))
+    private void tud$findAndExtractInventoryAmmoItemReturn(IItemHandler itemHandler, ItemStack gunItem, int needAmmoCount, CallbackInfoReturnable<Integer> cir) {
+        if (tud$currentAmmo < needAmmoCount) {
+            cir.setReturnValue(needAmmoCount - tud$currentAmmo);
         }
     }
 
