@@ -12,7 +12,9 @@
     "AmmoBoxItemMixin",
     "AmmoItemMixin",
     "ClientGunTooltipMixin",
-    "GunHudOverlayMixin"
+    "GunAnimationStateContextMixin",
+    "GunHudOverlayMixin",
+    "ModernKineticGunScriptAPIMixin"
   ],
   "client": [
   ]
