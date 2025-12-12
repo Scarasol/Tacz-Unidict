@@ -51,13 +51,8 @@ public abstract class AmmoBoxItemMixin extends Item implements DyeableLeatherIte
                 String ammoIdStr = commonGunIndex.map((gunIndex) ->
                         gunIndex.getGunData().getAmmoId().toString()).orElse("");
                 if (AmmoManager.canUseGeneralAmmo(gunId.toString(), ammoIdStr)) {
-                    return commonGunIndex.map((gunIndex) -> {
-                        Tuple<ResourceLocation, Boolean> location = AmmoManager.getAmmo(gunIndex.getGunData().getReloadData().getType().name().toLowerCase());
-                        if (location == null) {
-                            location = AmmoManager.getAmmo(gunIndex.getType());
-                        }
-                        return location != null && ammoId.equals(location.getA());
-                            }).orElse(false);
+                    Tuple<ResourceLocation, Boolean> location = AmmoManager.getAmmo(gun);
+                    return location != null && ammoId.equals(location.getA());
                 }
                 return ammoIdStr.equals(ammoId.toString());
             }
