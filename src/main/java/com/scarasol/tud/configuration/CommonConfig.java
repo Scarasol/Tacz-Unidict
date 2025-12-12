@@ -22,6 +22,7 @@ public class CommonConfig {
                 Reload type supported.
                 Format: "pistol, tacz:9mm" — this means that all guns of the type pistol will use the 9mm.
                 "pistol, $minecraft:gold_nugget" - use $ to make the guns use item as ammo.
+                "#forge:gun, tacz:9mm" - When the Tag Editor mod is installed, you can use tags to categorize firearms.
                 """)
                 .defineList("Ammo of Gun",
                         Lists.newArrayList("pistol, tacz_unidict:pistol", "sniper, tacz_unidict:sniper", "rifle, tacz_unidict:rifle", "shotgun, tacz_unidict:shot", "smg, tacz_unidict:pistol", "rpg, tacz_unidict:barrel", "mg, tacz_unidict:rifle", "fuel, tacz_unidict:fuel_tank"),
