@@ -1,6 +1,9 @@
 package com.scarasol.tud.mixin;
 
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.scarasol.tud.TudMod;
 import com.scarasol.tud.inventory.tooltip.CustomGunTooltip;
 import com.scarasol.tud.manager.AmmoManager;
 import com.tacz.guns.api.TimelessAPI;
@@ -9,18 +12,23 @@ import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IAnimationItem;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
+import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Tuple;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -42,10 +50,7 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
     @Inject(method = "getTooltipImage", cancellable = true, at = @At(value = "INVOKE", target = "Lcom/tacz/guns/resource/pojo/data/gun/GunData;getAmmoId()Lnet/minecraft/resources/ResourceLocation;"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void tud$getAmmoId(ItemStack stack, CallbackInfoReturnable<Optional<TooltipComponent>> cir, IGun iGun, Optional optional, CommonGunIndex gunIndex) {
         if (AmmoManager.canUseGeneralAmmo(getGunId(stack).toString(), gunIndex.getGunData().getAmmoId().toString())) {
-            Tuple<ResourceLocation, Boolean> ammo = AmmoManager.getAmmo(gunIndex.getGunData().getReloadData().getType().name().toLowerCase());
-            if (ammo == null) {
-                ammo = AmmoManager.getAmmo(gunIndex.getType());
-            }
+            Tuple<ResourceLocation, Boolean> ammo = AmmoManager.getAmmo(stack);
             if (ammo != null) {
                 cir.setReturnValue(Optional.of(new CustomGunTooltip(stack, iGun, ammo.getA(), gunIndex, ammo.getB())));
             }
@@ -98,6 +103,16 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         }
         if (AmmoManager.isAmmoOfGunItem(gun, checkAmmoStack)) {
             cir.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "lambda$dropAllAmmo$2", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/items/ItemHandlerHelper;giveItemToPlayer(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    private void tud$dropAllAmmo(int ammoCount, ResourceLocation ammoId, Player player, ItemStack gunItem, CommonAmmoIndex ammoIndex, CallbackInfo ci, int stackSize, int tmpAmmoCount, int roundCount, int i, int count, ItemStack ammoItem) {
+        ItemStack itemStack = AmmoManager.getGunAmmo(gunItem);
+        if (!itemStack.isEmpty() && !ItemStack.isSameItemSameTags(itemStack, ammoItem)) {
+            itemStack.setCount(count);
+            ammoItem.setCount(0);
+            ItemHandlerHelper.giveItemToPlayer(player, itemStack);
         }
     }
 

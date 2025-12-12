@@ -150,7 +150,7 @@ dependencies {
         jarJar.ranged(it, "[0.3.6,)")
     }
 
-    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:6654541")
+    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:7278003")
     implementation fg.deobf("curse.maven:jei-238222:6600311")
     implementation fg.deobf("curse.maven:jade-324717:6271651")
 
