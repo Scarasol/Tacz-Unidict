@@ -16,6 +16,9 @@ public class CommonConfig {
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GUN_WHITELIST;
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> AMMO_WHITELIST;
 
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> ITEM_REPLACE;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> RICIPE_REMOVE;
+
     static {
         TYPE_TO_AMMO = BUILDER.comment("""
                 Which ammo is used by each type of gun.
@@ -31,6 +34,16 @@ public class CommonConfig {
                 .defineList("Gun WhiteList", Lists.newArrayList(), (element) -> true);
         AMMO_WHITELIST = BUILDER.comment("Guns that use these types of ammo will not be affected by this mod.")
                 .defineList("Ammo WhiteList", Lists.newArrayList(), (element) -> true);
+
+        BUILDER.push("Compat: Tag Editor");
+        ITEM_REPLACE = BUILDER.comment("""
+                Replace TACZ items in loot tables.
+                Format: forge:need_to_replace, minecraft:diamond — this means all items with the tag forge:need_to_replace will be replaced with diamonds.
+                You can also use gunID, ammoID, or attachmentID directly.""")
+                .defineList("LootTable Replace", Lists.newArrayList(), (element) -> true);
+        RICIPE_REMOVE = BUILDER.comment("Should all TACZ items with the tag tacz:recipe_remove have their recipes removed? (Only effective for TACZ’s default crafting recipes)")
+                .define("Recipe Remove", true);
+        BUILDER.pop();
         SPEC = BUILDER.build();
     }
 }
