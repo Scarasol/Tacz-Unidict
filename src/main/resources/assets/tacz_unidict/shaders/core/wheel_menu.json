@@ -1,0 +1,39 @@
+{
+  "blend": {
+    "func": "add",
+    "srcrgb": "srcalpha",
+    "dstrgb": "1-srcalpha"
+  },
+  "vertex": "tacz_unidict:wheel_menu",
+  "fragment": "tacz_unidict:wheel_menu",
+  "attributes": ["Position", "UV0"],
+  "samplers": [],
+  "uniforms": [
+    {
+      "name": "ModelViewMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1]
+    },
+    {
+      "name": "ProjMat",
+      "type": "matrix4x4",
+      "count": 16,
+      "values": [1,0,0,0,  0,1,0,0,  0,0,1,0,  0,0,0,1]
+    },
+
+    { "name": "u_Size", "type": "float", "count": 2, "values": [180.0, 180.0] },
+    { "name": "u_RadiusOuter", "type": "float", "count": 1, "values": [90.0] },
+    { "name": "u_RadiusInner", "type": "float", "count": 1, "values": [28.0] },
+    { "name": "u_AA", "type": "float", "count": 1, "values": [1.2] },
+
+    { "name": "u_BaseColor", "type": "float", "count": 4, "values": [0.10, 0.10, 0.10, 0.15] },
+    { "name": "u_HighlightColor", "type": "float", "count": 4, "values": [0.70, 0.70, 0.70, 0.08] },
+    { "name": "u_LineColor", "type": "float", "count": 4, "values": [0.90, 0.90, 0.90, 0.06] },
+
+    { "name": "u_LineWidthPx", "type": "float", "count": 1, "values": [0.4] },
+
+    { "name": "u_Segments", "type": "float", "count": 1, "values": [6.0] },
+    { "name": "u_Selected", "type": "float", "count": 1, "values": [-1.0] }
+  ]
+}

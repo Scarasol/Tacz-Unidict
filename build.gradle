@@ -150,16 +150,17 @@ dependencies {
         jarJar.ranged(it, "[0.3.6,)")
     }
 
-    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:7278003")
+    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:7401617-sources-7401626")
     implementation fg.deobf("curse.maven:jei-238222:6600311")
     implementation fg.deobf("curse.maven:jade-324717:6271651")
-    implementation fg.deobf("curse.maven:tag-editor-1401631:7324192")
+    implementation fg.deobf("curse.maven:tag-editor-1401631:7365181")
 
     runtimeOnly fg.deobf("curse.maven:curios-309927:6418456")
     runtimeOnly fg.deobf("curse.maven:geckolib-388172:6658942")
     runtimeOnly fg.deobf("curse.maven:superb-warfare-1218165:6702058")
 
     runtimeOnly fg.deobf("curse.maven:timeless-and-classics-guns-lesraisins-append-pack-931523:6597881")
+    runtimeOnly fg.deobf("curse.maven:kiwi-303657:7289940")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

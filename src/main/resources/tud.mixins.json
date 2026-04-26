@@ -11,11 +11,17 @@
     "AbstractGunItemMixin",
     "AmmoBoxItemMixin",
     "AmmoItemMixin",
+    "AttachmentCachePropertyMixin",
+    "AttachmentDataUtilsMixin",
     "ClientGunTooltipMixin",
     "GunAnimationStateContextMixin",
     "GunHudOverlayMixin",
     "LootTableMixin",
-    "ModernKineticGunScriptAPIMixin"
+    "ModernKineticGunScriptAPIMixin",
+    "accessor.BulletDataAccessor",
+    "accessor.ExtraDamageAccessor",
+    "accessor.FallingBlockEntityAccessor",
+    "accessor.GunDataAccessor"
   ],
   "client": [
   ]
