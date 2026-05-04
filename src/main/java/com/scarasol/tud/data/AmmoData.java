@@ -28,6 +28,14 @@ public class AmmoData implements JsonData, SearchableModData {
     private Float friction;
     private Float damage;
     private Float knockback;
+    private Integer bulletAmount;
+    private Float soundVolume;
+    private Float soundPitch;
+    private Boolean suppressSound;
+    private Float soundDistanceMultiplier;
+    private Float accuracyModifier;
+    private Float horizontalRecoilModifier;
+    private Float verticalRecoilModifier;
     private Boolean igniteEntity;
     private Boolean igniteBlock;
     private Integer igniteEntityTime;
@@ -121,6 +129,46 @@ public class AmmoData implements JsonData, SearchableModData {
     public void setKnockback(Float knockback) {
         this.knockback = knockback;
     }
+
+    public Integer getBulletAmount() {
+        return bulletAmount;
+    }
+
+    public void setBulletAmount(Integer bulletAmount) {
+        this.bulletAmount = bulletAmount;
+    }
+
+    public Float getSoundVolume() {
+        return soundVolume;
+    }
+
+    public Float getSoundPitch() {
+        return soundPitch;
+    }
+
+    public Boolean getSuppressSound() {
+        return suppressSound;
+    }
+
+    public Float getSoundDistanceMultiplier() {
+        return soundDistanceMultiplier;
+    }
+
+    public Float getAccuracyModifier() {
+        return accuracyModifier;
+    }
+
+    public void setAccuracyModifier(Float accuracyModifier) {
+        this.accuracyModifier = accuracyModifier;
+    }
+
+    public Float getHorizontalRecoilModifier() { return horizontalRecoilModifier; }
+
+    public void setHorizontalRecoilModifier(Float horizontalRecoilModifier) { this.horizontalRecoilModifier = horizontalRecoilModifier; }
+
+    public Float getVerticalRecoilModifier() { return verticalRecoilModifier; }
+
+    public void setVerticalRecoilModifier(Float verticalRecoilModifier) { this.verticalRecoilModifier = verticalRecoilModifier; }
 
     public Boolean getExplosion() {
         return explosion;

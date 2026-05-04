@@ -9,5 +9,8 @@
     "tacz_unidict.ammo.rifle.name": "通用步枪子弹",
     "tacz_unidict.ammo.shot.name": "通用霰弹",
     "tacz_unidict.ammo.sniper.name": "通用狙击枪子弹",
-    "tacz_unidict.gun.ammo.desc": "通用子弹"
+    "tacz_unidict.gun.ammo.desc": "通用子弹",
+
+    "tacz_unidict.tooltip.damage_per_projectile": "伤害:",
+    "tacz_unidict.tooltip.damage_single": "伤害:"
 }

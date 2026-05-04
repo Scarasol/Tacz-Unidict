@@ -21,8 +21,11 @@
     "accessor.BulletDataAccessor",
     "accessor.ExtraDamageAccessor",
     "accessor.FallingBlockEntityAccessor",
-    "accessor.GunDataAccessor"
+    "accessor.GunDataAccessor",
+    "GunRecoilMixin"
   ],
   "client": [
+    "LocalPlayerShootMixin",
+    "SoundPlayManagerMixin"
   ]
 }

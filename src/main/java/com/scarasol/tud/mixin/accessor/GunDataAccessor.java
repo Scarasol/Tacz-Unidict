@@ -2,9 +2,13 @@ package com.scarasol.tud.mixin.accessor;
 
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
+import com.tacz.guns.resource.pojo.data.gun.GunRecoil;
+import com.tacz.guns.resource.pojo.data.gun.InaccuracyType;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+
+import java.util.Map;
 
 /**
  * @author Scarasol
@@ -25,4 +29,10 @@ public interface GunDataAccessor {
 
     @Accessor("ammoId")
     void tud$setAmmoId(ResourceLocation v);
+
+    @Accessor("inaccuracy")
+    Map<InaccuracyType, Float> tud$getInaccuracy();
+
+    @Accessor("inaccuracy")
+    void tud$setInaccuracy(Map<InaccuracyType, Float> inaccuracy);
 }

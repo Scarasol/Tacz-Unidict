@@ -2,12 +2,14 @@ package com.scarasol.tud.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.scarasol.tud.data.MagData;
 import com.scarasol.tud.inventory.tooltip.CustomGunTooltip;
 import com.scarasol.tud.manager.AmmoManager;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.client.tooltip.ClientGunTooltip;
 import com.tacz.guns.inventory.tooltip.GunTooltip;
 import com.tacz.guns.item.GunTooltipPart;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -71,6 +73,39 @@ public abstract class ClientGunTooltipMixin implements ClientTooltipComponent {
         com.scarasol.tud.data.AmmoData currentAmmoData = AmmoManager.getCurrentAmmoData(this.gun);
         if (currentAmmoData != null && currentAmmoData.getEntityId() != null) {
             this.hideDamageInfo = true;
+        }
+
+        if (!hideDamageInfo && currentAmmoData != null) {
+            Float totalDamage = currentAmmoData.getDamage();
+            Integer bulletAmount = currentAmmoData.getBulletAmount();
+            // 如果 bulletAmount 为 null，视为 1（单发）
+            int finalBulletAmount = (bulletAmount == null) ? 1 : bulletAmount;
+
+            if (totalDamage != null) {
+                // 获取枪械伤害修正值
+                com.scarasol.tud.data.GunData gunData = AmmoManager.getGunData(this.gun);
+                MagData magData = gunData != null ? gunData.getCurrentMag(this.gun) : null;
+                float damageBonus = magData != null ? magData.getDamageBonus() : 0f;
+
+                // 每发伤害 = (弹药总伤害 / 弹丸数) + 修正值
+                double perShotDamage = (totalDamage / finalBulletAmount) + damageBonus;
+                if (perShotDamage < 0) perShotDamage = 0;
+                String damageValue = String.format("%.1f", perShotDamage);
+
+                Component damageText;
+                if (finalBulletAmount > 1) {
+                    damageText = Component.translatable("tacz_unidict.tooltip.damage_per_projectile")
+                            .append(" ")
+                            .append(Component.literal(damageValue).withStyle(ChatFormatting.AQUA))
+                            .append(Component.literal(" x ").withStyle(ChatFormatting.AQUA))
+                            .append(Component.literal(String.valueOf(finalBulletAmount)).withStyle(ChatFormatting.AQUA));
+                } else {
+                    damageText = Component.translatable("tacz_unidict.tooltip.damage_single")
+                            .append(" ")
+                            .append(Component.literal(damageValue).withStyle(ChatFormatting.AQUA));
+                }
+                this.damage = damageText.copy();
+            }
         }
 
         if (this.hideDamageInfo) {
