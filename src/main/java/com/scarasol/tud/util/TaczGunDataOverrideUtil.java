@@ -9,11 +9,7 @@ import com.scarasol.tud.mixin.accessor.GunDataAccessor;
 import com.scarasol.tud.util.data.DataManager;
 import com.scarasol.tud.api.functional.EntityGetter;
 import com.scarasol.tud.manager.EntitySpawnManager;
-import com.tacz.guns.resource.pojo.data.gun.BulletData;
-import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
-import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
-import com.tacz.guns.resource.pojo.data.gun.GunData;
-import com.tacz.guns.resource.pojo.data.gun.Ignite;
+import com.tacz.guns.resource.pojo.data.gun.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
@@ -22,6 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class TaczGunDataOverrideUtil {
 
@@ -32,14 +30,16 @@ public final class TaczGunDataOverrideUtil {
 
     @Nullable
     public static GunData buildOverrideGunData(GunData originalGunData, ItemStack gunItem) {
-        AmmoData ammo = AmmoManager.getCurrentAmmoData(gunItem);
-        MagData mag = AmmoManager.getCurrentMagData(gunItem);
-
-        if (ammo == null && mag == null) {
+        if (originalGunData == null) {
             return null;
         }
 
-        // 只有当 ammo.isItem == false 时，才允许覆盖 ammoId，并且只用 ammoData 的 ammoId
+        AmmoData ammo = AmmoManager.getCurrentAmmoData(gunItem);
+        MagData mag = null;
+        com.scarasol.tud.data.GunData tudGunData = AmmoManager.getGunData(gunItem);
+        if (tudGunData != null) {
+            mag = tudGunData.getCurrentMag(gunItem);
+        }
         boolean ammoIdOverride = false;
         ResourceLocation desiredAmmoId = null;
         if (ammo != null && !ammo.isItem() && ammo.getAmmoId() != null) {
@@ -47,32 +47,44 @@ public final class TaczGunDataOverrideUtil {
             ammoIdOverride = desiredAmmoId != null
                     && (originalGunData.getAmmoId() == null || !desiredAmmoId.equals(originalGunData.getAmmoId()));
         }
-
         boolean ammoOverride = ammo != null && needOverride(ammo);
         boolean magOverride = mag != null && needOverride(mag);
 
         if (!ammoOverride && !magOverride && !ammoIdOverride) {
             return null;
         }
-
         GunData copy = shallowCopyGunData(originalGunData);
         if (copy == null) {
             return null;
         }
-
-        if (ammoIdOverride) {
-            ((GunDataAccessor) (Object) copy).tud$setAmmoId(desiredAmmoId);
+        float accuracyModifier = 1.0f;
+        if (ammo != null && ammo.getAccuracyModifier() != null) {
+            accuracyModifier *= ammo.getAccuracyModifier();
         }
-
+        if (mag != null) {
+            accuracyModifier *= mag.getAccuracyModifier();
+        }
+        if (Math.abs(accuracyModifier - 1.0f) > 0.0001f) {
+            Map<InaccuracyType, Float> originalMap = copy.getInaccuracy();
+            if (originalMap != null && !originalMap.isEmpty()) {
+                Map<InaccuracyType, Float> newMap = new HashMap<>();
+                for (Map.Entry<InaccuracyType, Float> entry : originalMap.entrySet()) {
+                    newMap.put(entry.getKey(), entry.getValue() * accuracyModifier);
+                }
+                copy.setInaccuracy(newMap);
+            }
+        }
+        if (ammoIdOverride) {
+            ((GunDataAccessor) copy).tud$setAmmoId(desiredAmmoId);
+        }
         if (magOverride) {
             applyMagOverrides(copy, mag);
         }
-
         if (ammoOverride) {
             BulletData srcBullet = originalGunData.getBulletData();
             if (srcBullet != null) {
                 BulletData bulletCopy = buildBulletCopy(srcBullet, ammo);
-                ((GunDataAccessor) (Object) copy).tud$setBulletData(bulletCopy);
+                ((GunDataAccessor) copy).tud$setBulletData(bulletCopy);
             }
         }
 
@@ -98,7 +110,8 @@ public final class TaczGunDataOverrideUtil {
                 || ammo.getExplosionDelayCount() != null
                 || ammo.getArmorIgnore() != null
                 || ammo.getHeadShot() != null
-                || (ammo.getDamageAdjust() != null && !ammo.getDamageAdjust().isEmpty());
+                || (ammo.getDamageAdjust() != null && !ammo.getDamageAdjust().isEmpty())
+                || ammo.getBulletAmount() != null;
     }
 
     private static boolean needOverride(MagData mag) {
@@ -206,6 +219,15 @@ public final class TaczGunDataOverrideUtil {
         if (ammo.getPierce() != null) {
             b.tud$setPierce(Math.max(1, ammo.getPierce()));
         }
+        if (ammo.getBulletAmount() != null) {
+            int amount = Math.max(1, ammo.getBulletAmount());
+            b.tud$setBulletAmount(amount);
+        }
+
+        applyExtraDamage(b, srcBullet, ammo);
+        applyIgnite(b, srcBullet, ammo);
+        applyExplosion(b, srcBullet, ammo);
+        applyTracer(b, ammo);
 
         applyExtraDamage(b, srcBullet, ammo);
         applyIgnite(b, srcBullet, ammo);

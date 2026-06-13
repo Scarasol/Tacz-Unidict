@@ -24,5 +24,8 @@
     "accessor.GunDataAccessor"
   ],
   "client": [
+    "LocalPlayerShootMixin",
+    "SoundPlayManagerMixin",
+    "GunRecoilMixin"
   ]
 }

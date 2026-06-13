@@ -9,5 +9,8 @@
     "tacz_unidict.ammo.rifle.name": "General Rifle",
     "tacz_unidict.ammo.shot.name": "General Shot",
     "tacz_unidict.ammo.sniper.name": "General Sniper",
-    "tacz_unidict.gun.ammo.desc": "Tacz: Unidict"
+    "tacz_unidict.gun.ammo.desc": "Tacz: Unidict",
+
+    "tacz_unidict.tooltip.damage_per_projectile": "Damage:",
+    "tacz_unidict.tooltip.damage_single": "Damage:"
 }

@@ -7,6 +7,7 @@ import com.scarasol.tud.manager.AmmoManager;
 import com.scarasol.tud.util.data.DataManager;
 import com.scarasol.tud.util.io.ModGson;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
+import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.entity.EntityKineticBullet;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,7 +17,9 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -48,32 +51,39 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onEntityHurtByGunPost(EntityHurtByGunEvent.Pre event) {
-        if (event.getLogicalSide().isClient()) {
-            return;
-        }
-
+        if (event.getLogicalSide().isClient()) return;
         Entity hurt = event.getHurtEntity();
-        if (hurt == null) {
-            return;
-        }
-
+        if (hurt == null) return;
         Entity bullet = event.getBullet();
         String ammoId = bullet.getPersistentData().getString("TudAmmoId");
-
         AmmoData ammoData = DataManager.getSearchableModData(AmmoData.class, ammoId);
-        if (ammoData == null) {
-            return;
-        }
+        if (ammoData == null) return;
 
         String modifierId = ammoData.getModifierId();
-        if (modifierId == null) {
-            return;
+        if (modifierId != null) {
+            ModifierData modifierData = DataManager.getSearchableModData(ModifierData.class, modifierId);
+            if (modifierData != null) {
+                event.setBaseAmount((float) (event.getBaseAmount() * modifierData.getModifier(hurt)));
+            }
         }
-        ModifierData modifierData = DataManager.getSearchableModData(ModifierData.class, modifierId);
-        if (modifierData == null) {
-            return;
+
+        if (bullet instanceof Projectile projectile) {
+            Entity owner = projectile.getOwner();
+            if (owner instanceof LivingEntity shooter) {
+                ItemStack gunItem = shooter.getMainHandItem();
+                if (gunItem.getItem() instanceof IGun) {
+                    com.scarasol.tud.data.GunData gunData = AmmoManager.getGunData(gunItem);
+                    if (gunData != null) {
+                        MagData magData = gunData.getCurrentMag(gunItem);
+                        if (magData != null && magData.getDamageBonus() != 0f) {
+                            float newDamage = event.getBaseAmount() + magData.getDamageBonus();
+                            if (newDamage < 0) newDamage = 0;
+                            event.setBaseAmount(newDamage);
+                        }
+                    }
+                }
+            }
         }
-        event.setBaseAmount((float) (event.getBaseAmount() * modifierData.getModifier(hurt)));
     }
 
 
