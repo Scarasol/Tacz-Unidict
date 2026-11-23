@@ -1,27 +1,25 @@
 package com.scarasol.tud.mixin;
 
-import com.scarasol.tud.TudMod;
-import com.scarasol.tud.api.functional.EntityGetter;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.scarasol.tud.data.AmmoData;
 import com.scarasol.tud.data.TaczGunDataMap;
 import com.scarasol.tud.manager.AmmoManager;
 import com.scarasol.tud.manager.EntitySpawnManager;
-import com.scarasol.tud.util.data.DataManager;
-import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.item.ModernKineticGunScriptAPI;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import com.tacz.guns.sound.SoundManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,8 +28,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Objects;
 
 /**
  * @author Scarasol
@@ -42,11 +38,6 @@ public abstract class ModernKineticGunScriptAPIMixin {
     @Shadow private ItemStack itemStack;
     @Shadow private LivingEntity shooter;
     @Shadow private ResourceLocation gunId;
-    @Shadow private ResourceLocation gunDisplayId;
-
-
-    @Shadow public abstract ItemStack getItemStack();
-
     @ModifyVariable(
             method = "shootOnce",
             at = @At(
@@ -86,7 +77,7 @@ public abstract class ModernKineticGunScriptAPIMixin {
     }
 
     @Inject(
-            method = "lambda$hasAmmoToConsume$5",
+            method = "lambda$hasAmmoToConsume$6",
             cancellable = true,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0),
             locals = LocalCapture.CAPTURE_FAILSOFT
@@ -104,30 +95,16 @@ public abstract class ModernKineticGunScriptAPIMixin {
 
     @Inject(
             method = "lambda$shootOnce$2",
-            cancellable = true,
             at = @At(value = "INVOKE", target = "Lcom/tacz/guns/resource/pojo/data/gun/GunData;getAmmoId()Lnet/minecraft/resources/ResourceLocation;"),
-            locals = LocalCapture.CAPTURE_FAILSOFT
-            ,remap = false
+            remap = false
     )
-    private void tud$onShoot(boolean consumeAmmo,
-                             GunData gunData,
-                             int bulletAmount,
-                             BulletData bulletData,
-                             IGunOperator gunOperator,
-                             float processedSpeed,
-                             float inaccuracy,
-                             int soundDistance,
-                             boolean useSilenceSound,
-                             CallbackInfoReturnable<Boolean> cir,
-                             boolean fire,
-                             float pitch,
-                             float yaw,
-                             Level world) {
-
-        if (gunData == null) {
-            return;
-        }
-
+    private void tud$spawnCustomProjectiles(CallbackInfoReturnable<Boolean> cir,
+                                           @Local(argsOnly = true) GunData gunData,
+                                           @Local(argsOnly = true, ordinal = 0) LocalIntRef bulletAmount,
+                                           @Local(argsOnly = true, ordinal = 1) float processedSpeed,
+                                           @Local(argsOnly = true, ordinal = 2) float inaccuracy,
+                                           @Local(ordinal = 3) float pitch,
+                                           @Local(ordinal = 4) float yaw) {
         ResourceLocation ammoId = gunData.getAmmoId();
         if (ammoId == null) {
             return;
@@ -147,7 +124,7 @@ public abstract class ModernKineticGunScriptAPIMixin {
             return;
         }
 
-        for (int i = 0; i < bulletAmount; ++i) {
+        for (int i = 0, count = bulletAmount.get(); i < count; ++i) {
             Entity entity = EntitySpawnManager.getEntity(serverLevel, ammoData);
 
             if (entity == null) {
@@ -159,28 +136,23 @@ public abstract class ModernKineticGunScriptAPIMixin {
             serverLevel.addFreshEntity(entity);
         }
 
-        if (soundDistance > 0) {
-            String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
-            SoundManager.sendSoundToNearby(this.shooter, soundDistance, this.gunId, this.gunDisplayId, soundId,
-                    0.8F, 0.9F + this.shooter.getRandom().nextFloat() * 0.125F);
-        }
-
-        cir.setReturnValue(true);
+        // Skip the kinetic-bullet loop and leave shot sound and post-fire dispatch to TaCZ.
+        bulletAmount.set(0);
     }
 
 
-    @Inject(
+    @WrapOperation(
             method = "lambda$shootOnce$2",
             at = @At(value = "INVOKE", target = "Lcom/tacz/guns/entity/EntityKineticBullet;applyShotgunDamageSpread(I)V"),
-            locals = LocalCapture.CAPTURE_FAILSOFT
-            , remap = false
+            remap = false
     )
-    private void addTag(boolean consumeAmmo, GunData gunData, int bulletAmount, BulletData bulletData, IGunOperator gunOperator, float processedSpeed, float inaccuracy, int soundDistance, boolean useSilenceSound, CallbackInfoReturnable<Boolean> cir, boolean fire, float pitch, float yaw, Level world, ResourceLocation ammoId, int i, boolean isTracer, EntityKineticBullet bullet) {
-        AmmoData ammoData = AmmoManager.getCurrentAmmoData(getItemStack());
+    private void tud$tagBullet(EntityKineticBullet bullet, int bulletAmount, Operation<Void> original) {
+        AmmoData ammoData = AmmoManager.getCurrentAmmoData(itemStack);
         if (ammoData != null) {
             ResourceLocation resourceLocation = ammoData.getAmmoId();
             bullet.getPersistentData().putString("TudAmmoId", resourceLocation.toString());
         }
+        original.call(bullet, bulletAmount);
     }
 
 }

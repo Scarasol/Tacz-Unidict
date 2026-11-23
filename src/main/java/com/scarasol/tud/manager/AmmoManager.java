@@ -7,6 +7,7 @@ import com.scarasol.tud.configuration.CommonConfig;
 import com.scarasol.tud.data.AmmoData;
 import com.scarasol.tud.data.GunData;
 import com.scarasol.tud.data.MagData;
+import com.scarasol.tud.data.TaczGunDataMap;
 import com.scarasol.tud.util.data.DataManager;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
@@ -35,6 +36,12 @@ public class AmmoManager {
     private static final Map<String, Tuple<ResourceLocation, Boolean>> TYPE_AMMO = Maps.newHashMap();
     private static final Map<TagKey<Item>, Tuple<ResourceLocation, Boolean>> TYPE_AMMO_TAG = Maps.newHashMap();
     private static boolean INIT;
+
+    public static void clearJsonAmmoData() {
+        DataManager.clear(TaczGunDataMap.class);
+        DataManager.clear(GunData.class);
+        DataManager.clear(AmmoData.class);
+    }
 
     @Nullable
     public static Tuple<ResourceLocation, Boolean> getAmmo(ItemStack itemStack) {

@@ -1,16 +1,12 @@
 package com.scarasol.tud.event;
 
 import com.scarasol.tud.TudMod;
+import com.scarasol.tud.client.network.ClientNetworkHandler;
 import com.scarasol.tud.client.screen.WheelMenuScreen;
 import com.scarasol.tud.configuration.CommonConfig;
-import com.scarasol.tud.data.AmmoData;
 import com.scarasol.tud.data.GunData;
-import com.scarasol.tud.data.ModifierData;
-import com.scarasol.tud.data.TaczGunDataMap;
 import com.scarasol.tud.init.TudKeyMappings;
 import com.scarasol.tud.manager.AmmoManager;
-import com.scarasol.tud.util.data.DataManager;
-import com.scarasol.tud.util.io.ModGson;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
@@ -20,20 +16,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.loading.FMLPaths;
 import org.lwjgl.glfw.GLFW;
 
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -90,18 +84,14 @@ public final class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void recipeCancel(RecipesUpdatedEvent event) {
-        try {
-            DataManager.clear(GunData.class);
-            DataManager.clear(AmmoData.class);
-            DataManager.clear(TaczGunDataMap.class);
-            DataManager.clear(ModifierData.class);
-            ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("modifier_data"));
-            ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("gun_data"));
-            ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("ammo_data"));
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
+        if (event.getConnection() != null && !event.getConnection().isMemoryConnection()) {
+            ClientNetworkHandler.clearAmmoSync();
         }
+    }
+
+    @SubscribeEvent
+    public static void recipeCancel(RecipesUpdatedEvent event) {
         if (!CommonConfig.RICIPE_REMOVE.get()) {
             return;
         }

@@ -2,10 +2,9 @@ package com.scarasol.tud.util.data;
 
 import com.scarasol.tud.api.data.ModData;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Iterator;
+import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Scarasol
@@ -35,7 +34,10 @@ public class DataRegister<T extends ModData> implements Iterable<T> {
     }
 
     public Stream<T> stream() {
-        return deque.stream();
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED),
+                false
+        );
     }
 
     public void clear() {

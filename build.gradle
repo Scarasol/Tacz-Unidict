@@ -150,7 +150,7 @@ dependencies {
         jarJar.ranged(it, "[0.3.6,)")
     }
 
-    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:7401617-sources-7401626")
+    implementation fg.deobf("curse.maven:timeless-and-classics-zero-1028108:9454481-sources-9454610")
     implementation fg.deobf("curse.maven:jei-238222:6600311")
     implementation fg.deobf("curse.maven:jade-324717:6271651")
     implementation fg.deobf("curse.maven:tag-editor-1401631:7365181")
@@ -219,6 +219,11 @@ tasks.named('jar', Jar).configure {
 
     // This is the preferred method to reobfuscate your jar file
     finalizedBy 'reobfJar'
+}
+
+tasks.register('sourcesJar', Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 // However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing:

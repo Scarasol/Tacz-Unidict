@@ -1,41 +1,31 @@
 package com.scarasol.tud.event;
 
 import com.scarasol.tud.TudMod;
-import com.scarasol.tud.configuration.CommonConfig;
 import com.scarasol.tud.data.*;
 import com.scarasol.tud.manager.AmmoManager;
+import com.scarasol.tud.network.NetworkHandler;
+import com.scarasol.tud.network.SyncAmmoDataPacket;
 import com.scarasol.tud.util.data.DataManager;
 import com.scarasol.tud.util.io.ModGson;
 import com.tacz.guns.api.event.common.EntityHurtByGunEvent;
-import com.tacz.guns.crafting.GunSmithTableRecipe;
-import com.tacz.guns.entity.EntityKineticBullet;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.world.item.crafting.RecipeManager;
-import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.client.event.RecipesUpdatedEvent;
 import net.minecraftforge.event.OnDatapackSyncEvent;
-import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import javax.xml.crypto.Data;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author Scarasol
@@ -45,6 +35,7 @@ public class EventHandler {
 
 
     private static final int DEFAULT_DURATION_TICKS = 200;
+    private static List<SyncAmmoDataPacket> ammoSyncPackets = List.of();
 
     @SubscribeEvent
     public static void onEntityHurtByGunPost(EntityHurtByGunEvent.Pre event) {
@@ -123,35 +114,49 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public static void loadData(OnDatapackSyncEvent event) {
+    public static void syncAmmoData(OnDatapackSyncEvent event) {
         if (event.getPlayer() != null) {
+            sendAmmoData(event.getPlayer());
             return;
         }
-        try {
-            DataManager.clear(GunData.class);
-            DataManager.clear(AmmoData.class);
-            DataManager.clear(TaczGunDataMap.class);
-            DataManager.clear(ModifierData.class);
-            ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("modifier_data"));
-            ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("gun_data"));
-            ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("ammo_data"));
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        loadData();
+        event.getPlayerList().getPlayers().forEach(EventHandler::sendAmmoData);
+    }
+
+    private static void sendAmmoData(ServerPlayer player) {
+        if (!player.connection.connection.isMemoryConnection()) {
+            for (SyncAmmoDataPacket packet : ammoSyncPackets) {
+                NetworkHandler.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> player), packet);
+            }
         }
     }
 
     @SubscribeEvent
     public static void loadData(ServerStartedEvent event) {
+        loadData();
+    }
+
+    @SubscribeEvent
+    public static void clearAmmoSync(ServerStoppedEvent event) {
+        ammoSyncPackets = List.of();
+    }
+
+    private static void loadData() {
+        AmmoManager.clearJsonAmmoData();
+        DataManager.clear(ModifierData.class);
         try {
-            DataManager.clear(GunData.class);
-            DataManager.clear(AmmoData.class);
-            DataManager.clear(TaczGunDataMap.class);
-            DataManager.clear(ModifierData.class);
             ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("modifier_data"));
             ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("gun_data"));
             ModGson.INSTANCE.loadAll(FMLPaths.CONFIGDIR.get().resolve(TudMod.MODID).resolve("ammo_data"));
         } catch (IOException e) {
-            e.printStackTrace();
+            TudMod.LOGGER.error("Failed to load UniDict JSON data", e);
+        }
+        try {
+            ammoSyncPackets = SyncAmmoDataPacket.createSnapshot();
+        } catch (IOException | RuntimeException e) {
+            ammoSyncPackets = List.of();
+            TudMod.LOGGER.error("Failed to prepare UniDict ammo data sync", e);
         }
     }
 }

@@ -13,9 +13,6 @@
     "AmmoItemMixin",
     "AttachmentCachePropertyMixin",
     "AttachmentDataUtilsMixin",
-    "ClientGunTooltipMixin",
-    "GunAnimationStateContextMixin",
-    "GunHudOverlayMixin",
     "LootTableMixin",
     "ModernKineticGunScriptAPIMixin",
     "accessor.BulletDataAccessor",
@@ -24,5 +21,8 @@
     "accessor.GunDataAccessor"
   ],
   "client": [
+    "ClientAmmoCountMixin",
+    "ClientGunTooltipMixin",
+    "GunAnimationStateContextMixin"
   ]
 }

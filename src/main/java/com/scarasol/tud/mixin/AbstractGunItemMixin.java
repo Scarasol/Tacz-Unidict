@@ -57,7 +57,7 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         }
     }
 
-    @Inject(method = "lambda$canReload$1", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "lambda$canReload$2", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
     private static void tud$checkItem(ItemStack gunItem, IItemHandler cap, CallbackInfoReturnable<Boolean> cir, int i, ItemStack checkAmmoStack) {
         Item item = checkAmmoStack.getItem();
         if (item instanceof IAmmo || item instanceof IAmmoBox) {
@@ -95,7 +95,7 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         }
     }
 
-    @Inject(method = "lambda$hasInventoryAmmo$6", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "lambda$hasInventoryAmmo$7", cancellable = true, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;getItem()Lnet/minecraft/world/item/Item;", ordinal = 0), locals = LocalCapture.CAPTURE_FAILSOFT)
     private static void tud$hasInventoryAmmoItem(ItemStack gun, IItemHandler cap, CallbackInfoReturnable<Boolean> cir, int i, ItemStack checkAmmoStack) {
         Item item = checkAmmoStack.getItem();
         if (item instanceof IAmmo || item instanceof IAmmoBox) {
@@ -106,7 +106,7 @@ public abstract class AbstractGunItemMixin extends Item implements IGun, IAnimat
         }
     }
 
-    @Inject(method = "lambda$dropAllAmmo$2", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/items/ItemHandlerHelper;giveItemToPlayer(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
+    @Inject(method = "lambda$dropAllAmmo$3", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/items/ItemHandlerHelper;giveItemToPlayer(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void tud$dropAllAmmo(int ammoCount, ResourceLocation ammoId, Player player, ItemStack gunItem, CommonAmmoIndex ammoIndex, CallbackInfo ci, int stackSize, int tmpAmmoCount, int roundCount, int i, int count, ItemStack ammoItem) {
         ItemStack itemStack = AmmoManager.getGunAmmo(gunItem);
         if (!itemStack.isEmpty() && !ItemStack.isSameItemSameTags(itemStack, ammoItem)) {
